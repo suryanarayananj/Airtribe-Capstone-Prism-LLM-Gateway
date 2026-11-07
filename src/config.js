@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
+import { PrismError } from './errors.js';
 
 dotenv.config();
 
@@ -93,6 +94,13 @@ export function resolveModelChain(requested, opts = {}) {
   if (requested === 'auto') {
     const tier = opts.autoTier === 'smart' ? 'smart' : 'fast';
     const tierCfg = config.modelAliases[tier];
+    if (!tierCfg?.primary) {
+      throw new PrismError({
+        statusCode: 500,
+        type: 'configuration_error',
+        message: `Alias '${tier}' is not configured, so 'auto' cannot be resolved`,
+      });
+    }
     return {
       alias: 'auto',
       models: [tierCfg.primary, ...(tierCfg.fallbacks || [])],

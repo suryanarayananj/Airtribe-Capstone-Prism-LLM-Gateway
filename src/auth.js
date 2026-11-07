@@ -49,7 +49,15 @@ export function authenticateVirtualKey(authorization, opts = {}) {
 
   if (keyRecord.user_id) {
     const user = getUserById(keyRecord.user_id);
-    const mode = normalizeAccessMode(user?.access_mode);
+    if (!user) {
+      throw new PrismError({
+        statusCode: 403,
+        type: 'permission_error',
+        message:
+          'This key is linked to a user that no longer exists. Ask an admin to fix the key before using the API.',
+      });
+    }
+    const mode = normalizeAccessMode(user.access_mode);
     if (!accessModeAllowsApi(mode) && !opts.allowChatProxy) {
       throw new PrismError({
         statusCode: 403,
