@@ -1,0 +1,10 @@
+node_modules/
+.cursor/
+.env
+data/prism.db
+data/prism.db-*
+*.log
+.DS_Store
+web/dist/
+web/node_modules/
+test/routing_eval_report.json

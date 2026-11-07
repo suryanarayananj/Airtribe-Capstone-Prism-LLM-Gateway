@@ -1,0 +1,16 @@
+node_modules
+web/node_modules
+web/dist
+web/.vite*
+.git
+.env
+*.log
+data/prism.db
+data/prism.db-*
+agent-transcripts
+doc
+given_docs
+one_page_doc
+**/.DS_Store
+**/npm-debug.log*
+test/routing_eval_report.json

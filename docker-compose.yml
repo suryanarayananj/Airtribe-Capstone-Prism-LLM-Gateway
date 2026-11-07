@@ -1,0 +1,82 @@
+# Prism — gateway + pack mock providers
+# Usage:
+#   docker compose up --build
+# Then: curl http://localhost:8080/health
+#
+# Admin / Chat UIs stay on the host (npm run admin / npm run chat) and talk to :8080.
+
+services:
+  mock-alpha:
+    build:
+      context: .
+      dockerfile: docker/mock.Dockerfile
+    command: ["--port", "9001", "--name", "alpha"]
+    ports:
+      - "18001:9001" # host failover drills (Windows-friendly port)
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9001/health')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mock-beta:
+    build:
+      context: .
+      dockerfile: docker/mock.Dockerfile
+    command: ["--port", "9002", "--name", "beta"]
+    ports:
+      - "18002:9002"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9002/health')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      PRISM_HOST: "0.0.0.0"
+      PRISM_PORT: "8080"
+      PRISM_UPSTREAM: mock
+      PRISM_DB_PATH: /data/prism.db
+      PRISM_ALPHA_BASE_URL: http://mock-alpha:9001/v1
+      PRISM_BETA_BASE_URL: http://mock-beta:9002/v1
+      PRISM_ALPHA_API_KEY: mock-key-alpha
+      PRISM_BETA_API_KEY: mock-key-beta
+      PRISM_UPSTREAM_TIMEOUT_MS: "5000"
+      PRISM_ADMIN_TOKEN: prism-admin-demo
+      TRANSFORMERS_CACHE: /cache/transformers
+      HF_HOME: /cache/huggingface
+      XDG_CACHE_HOME: /cache
+      # Optional live upstream (leave unset for offline mock demo):
+      # PRISM_UPSTREAM: openrouter
+      # OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+    volumes:
+      - prism-db:/data
+      - prism-embeddings:/cache
+    depends_on:
+      mock-alpha:
+        condition: service_healthy
+      mock-beta:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  prism-db: # SQLite file survives compose restarts (P7d-2)
+  prism-embeddings: # MiniLM download cached across boots (P7d-3)

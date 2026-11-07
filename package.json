@@ -1,0 +1,27 @@
+{
+  "name": "prism-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prism LLM gateway — Node 20 + Fastify + SQLite",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/limiter.test.js test/budget.test.js test/adapter-stream.test.js test/pipe-sse.test.js test/router.test.js test/cache.test.js test/guardrails.test.js test/health.test.js",
+    "eval:routing": "node test/run-routing-eval.mjs",
+    "eval:cache": "node test/run-phase5-eval.mjs",
+    "admin": "npm --prefix web run dev",
+    "chat": "npm --prefix web run dev:chat",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.1.0",
+    "@xenova/transformers": "^2.17.2",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1"
+  }
+}
