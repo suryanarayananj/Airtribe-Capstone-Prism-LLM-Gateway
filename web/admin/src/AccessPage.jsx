@@ -268,15 +268,13 @@ export function PlanPage() {
       return {
         ...prev,
         model_allowlist,
-        verify_models: (prev.verify_models || []).filter((item) =>
-          model_allowlist.includes(item),
         verify_models: prev.verification_enabled
           ? checkerModels(model_allowlist)
           : [],
+      };
+    });
   }
 
-  function toggleVerifyModel(model) {
-    setForm((prev) => {
   if (view === 'list') {
     return (
       <>
@@ -379,6 +377,8 @@ export function PlanPage() {
             <DetailField label="Verification">
               {(selected.verify_models || []).length
                 ? 'on — any other allowed model'
+                : 'off'}
+            </DetailField>
             <DetailField label="Semantic cache">
               {selected.cache_enabled ? 'on' : 'off'}
             </DetailField>
@@ -497,8 +497,6 @@ export function PlanPage() {
             />
           </label>
           <label className="inline">
-            Needs verification model
-            <input
             Verification
             <input
               type="checkbox"
@@ -520,6 +518,8 @@ export function PlanPage() {
               Chat can check an answer with any other allowed model. `auto` is
               not used as a checker.
             </p>
+          ) : null}
+          <label className="inline">
             Semantic cache on
             <input
               type="checkbox"
