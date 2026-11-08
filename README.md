@@ -565,3 +565,41 @@ docker-compose.yml      Gateway + alpha/beta mocks + volumes
 VERIFICATION.md         Smoke / load / routing / latency report
 README.md               This file (setup, API, architecture, decisions)
 ```
+
+---
+
+## Try Prism (live demo)
+
+### 1. Wake the API
+
+Open this link first and wait until you see `"status":"ok"`:
+
+https://prism-gateway-wlzq.onrender.com/health
+
+### 2. Open the apps
+
+| App | URL |
+|---|---|
+| Chat | https://prism-chat-theta.vercel.app |
+| Admin | https://prism-admin-theta.vercel.app |
+
+### 3. Try Chat
+
+1. Sign in with:
+   - Username: `demo`
+   - Password: `demo123`
+2. Ask something (e.g. “What is an LLM?”).
+3. Ask a similar question again to see caching in action.
+4. Check **Recent** for conversation history.
+
+### 4. Try Admin
+
+1. Open the Admin app.
+2. Browse Overview, Requests, Cache, Providers, and Access.
+3. Confirm the chat request appears under Requests, and cache activity under Cache.
+
+### Quick links
+
+- Health: https://prism-gateway-wlzq.onrender.com/health
+- Chat: https://prism-chat-theta.vercel.app
+- Admin: https://prism-admin-theta.vercel.app
